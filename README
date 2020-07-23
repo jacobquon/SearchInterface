@@ -3,13 +3,16 @@ Authors:
 	- Jacob Quon
 
 Description:
-This is a simple html search interface made as a part of a larger search engine developed
-as the final project for UPenn's Cis455 (Internet and Web Systems). It uses sparkjava
-as its base.
+This is a simple html search interface (a templating engine was not used due to time constraints on the 
+project) made as a part of a larger search engine developed as the final project for UPenn's Cis455 
+(Internet and Web Systems). It uses sparkjava as its base.
 
 The sparkjava portion is split into a homepage, search, and page display which redirect to each
 other in that order. Get(“/search”) does the bulk of the work by calling various helper functions which
-preprocess the query, score the documents, and sort the scored documents. The scoring function loops over the words in the query and then has an inner loop which finds all documents that contain the word and calculates the relevant TF, IDF, and subsequent weight values. It then loops over all documents that had hits and calculates the final score:
+preprocess the query, score the documents, and sort the scored documents. The scoring function loops 
+over the words in the query and then has an inner loop which finds all documents that contain the word
+and calculates the relevant TF, IDF, and subsequent weight values. It then loops over all documents
+that had hits and calculates the final score:
 
 Score(doc) = pagerank*Sum_{queryWords}((0.5*titleWeight + (1-.5)*bodyWeight) * queryWeight)
 
@@ -31,10 +34,14 @@ The scored documents are stored in a hashMap with the docID as the key and a cus
 and IDF for each of the query words.
 
 The search engine is fairly scalable as most of the search time is related to scraping urls in order
-to display the titles of documents. However, if I were to have to search a much larger corpus (a corpus of 450,000 was used), I would have multithread the searching.
+to display the titles of documents. However, if I were to have to search a much larger corpus 
+(a corpus of 450,000 was used), I would have multithread the searching.
 
 Potentially useful features for testing are implemented through the use of static boolean variables which
-can be set before each run of the interface. "debug" and "extremeDebug" output to the console various amounts of score values and allow the user to see cached content in the corpus (which is what is used to calculate the document's score). Additionally, "titlesYN" allows the user to toggle whether the interface scrapes the websites for a title to display.
+can be set before each run of the interface. "debug" and "extremeDebug" output to the console various 
+amounts of score values and allow the user to see cached content in the corpus (which is what is used to 
+calculate the document's score). Additionally, "titlesYN" allows the user to toggle whether the interface 
+scrapes the websites for a title to display.
 
 List of Source Files:
 SearchInterface:
