@@ -1,0 +1,62 @@
+README
+Authors:
+	- Jacob Quon
+
+Description:
+This is a simple html search interface made as a part of a larger search engine developed
+as the final project for UPenn's Cis455 (Internet and Web Systems). It uses sparkjava
+as its base.
+
+The sparkjava portion is split into a homepage, search, and page display which redirect to each
+other in that order. Get(“/search”) does the bulk of the work by calling various helper functions which
+preprocess the query, score the documents, and sort the scored documents. The scoring function loops over the words in the query and then has an inner loop which finds all documents that contain the word and calculates the relevant TF, IDF, and subsequent weight values. It then loops over all documents that had hits and calculates the final score:
+
+Score(doc) = pagerank*Sum_{queryWords}((0.5*titleWeight + (1-.5)*bodyWeight) * queryWeight)
+
+Weight = TF * IDF
+
+TF = 0.5 + (1 − 0.5) * freq(word) / maxFreq(word)
+
+IDF = log(numDocuments / numDocumentsWithWord)
+
+Each of the weights had their own TF, but shared the IDF. The separate calculations of the TF of
+the title and body served as a good means of further distinguishing pages beyond basic TF/IDF. Initially,
+the score function involved cosine similarity. However, upon testing I found that cosine similarity
+equation caused the scores to converge to each other rather than differentiate. Thus, I omitted the cosine
+similarity in the final score function to improve the search results. In order to optimize the speed of the
+score function, I attempted to minimize loops and sql queries.
+
+The scored documents are stored in a hashMap with the docID as the key and a custom class
+(ScoreInfo) as the value. ScoreInfo uses hashMaps to store the titleWeight, bodyWeight, queryWeight,
+and IDF for each of the query words.
+
+The search engine is fairly scalable as most of the search time is related to scraping urls in order
+to display the titles of documents. However, if I were to have to search a much larger corpus (a corpus of 450,000 was used), I would have multithread the searching.
+
+Potentially useful features for testing are implemented through the use of static boolean variables which
+can be set before each run of the interface. "debug" and "extremeDebug" output to the console various amounts of score values and allow the user to see cached content in the corpus (which is what is used to calculate the document's score). Additionally, "titlesYN" allows the user to toggle whether the interface scrapes the websites for a title to display.
+
+List of Source Files:
+SearchInterface:
+	- src/main/java/quon/search/
+		- ScoreInfo
+		- Interface
+
+Instructions for Running:
+Running SearchInterface
+	- To compile the interface: 
+		- Navigate to the CIS455ProjectInterface directory
+		- Run “mvn compile assembly:single”
+	- To run the interface:
+		- Navigate to the CIS455ProjectInterface directory
+		- Run “java -jar ./target/SearchInterface-1.0-jar-with-dependencies.jar”
+	- 3 Options at the top:
+		- public static boolean debug
+			- If true: displays a link to cached data and various score values in the interface
+		- public static boolean extremeDebug
+			- If true: prints various values throughout the scoring function (also does everything debug does)
+		- public static boolean titlesYN = true
+			- If true: displays titles above the urls in the interface at the cost of speed
+
+Note that the sql databases that the search interface was pulling from no longer exist and thus the interface will not run
+
